@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tab_names">
+        <item>Map</item>
+        <item>Dogs</item>
+        <item>Cats</item>
+    </string-array>
+</resources>
