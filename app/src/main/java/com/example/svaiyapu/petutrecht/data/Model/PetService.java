@@ -1,22 +1,7 @@
 package com.example.svaiyapu.petutrecht.data.Model;
 
-import android.util.Log;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Date;
-import java.util.List;
 
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
