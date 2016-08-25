@@ -6,9 +6,12 @@ import java.util.Map;
 
 public class Pet {
 
+    private String img_colour;
     private String Breed;
     private String Description;
+    private Integer img_width;
     private Long created;
+    private Integer img_height;
     private String Gender;
     private Object ownerId;
     private String Name;
@@ -23,13 +26,63 @@ public class Pet {
     private Location Location;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
+    public String getImg_colour() {
+        return img_colour;
+    }
+
+    public String getBreed() {
+        return Breed;
+    }
+
+    public String getDescription() {
+        return Description;
+    }
+
+    public Integer getImg_width() {
+        return img_width;
+    }
+
+    public Integer getImg_height() {
+        return img_height;
+    }
+
+    public String getGender() {
+        return Gender;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public String getImg_secondary() {
+        return Img_secondary;
+    }
+
+    public String getImg_primary() {
+        return Img_primary;
+    }
+
+    public String getType() {
+        return Type;
+    }
+
+    public String getAge() {
+        return Age;
+    }
+
+    public com.example.svaiyapu.petutrecht.data.Model.Location getLocation() {
+        return Location;
+    }
+
     @Override
     public String toString() {
         return "Pet{" +
-                "Breed='" + Breed + '\'' +
-                // truncate description to 10 chars
-                ", Description='" + Description.substring(0, Math.min(Description.length(), 10)) + '\'' +
+                "img_colour='" + img_colour + '\'' +
+                ", Breed='" + Breed + '\'' +
+                ", Description='" + Description.substring(0, 10) + "..." + '\'' +
+                ", img_width=" + img_width +
                 ", created=" + created +
+                ", img_height=" + img_height +
                 ", Gender='" + Gender + '\'' +
                 ", ownerId=" + ownerId +
                 ", Name='" + Name + '\'' +
