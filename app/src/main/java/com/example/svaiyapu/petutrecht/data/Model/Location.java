@@ -19,6 +19,14 @@ public class Location {
     private Double longitude;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
     @Override
     public String toString() {
         return "Location{" +

@@ -23,4 +23,8 @@ public class RemoteResponse {
                 ", additionalProperties=" + additionalProperties +
                 '}';
     }
+
+    public List<Pet> getData() {
+        return data;
+    }
 }

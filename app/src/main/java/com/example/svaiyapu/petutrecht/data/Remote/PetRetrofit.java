@@ -1,4 +1,6 @@
-package com.example.svaiyapu.petutrecht.data.Model;
+package com.example.svaiyapu.petutrecht.data.Remote;
+
+import com.example.svaiyapu.petutrecht.data.Model.RemoteResponse;
 
 import java.io.IOException;
 
@@ -7,13 +9,12 @@ import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Headers;
-import retrofit2.http.Path;
 import retrofit2.Call;
 
 /**
  * Created by svaiyapu on 8/22/16.
  */
-public class PetService {
+public class PetRetrofit {
 
     public static final String API_URL = "https://api.backendless.com/v1/data/";
 
@@ -26,6 +27,30 @@ public class PetService {
         })
         @GET("Pet")
         Call<RemoteResponse> petResponse();
+    }
+
+    private static PetRetrofit INSTANCE;
+
+    public static PetRetrofit getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new PetRetrofit();
+        }
+        return INSTANCE;
+    }
+
+    public Call<RemoteResponse> getCallInstance() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Create an instance of our Pet backendless API interface.
+        PetResponse petResponse = retrofit.create(PetResponse.class);
+
+        // Create a call instance for looking up the json.
+        Call<RemoteResponse> call = petResponse.petResponse();
+
+        return call;
     }
 
     public static void main(String... args) throws IOException {
