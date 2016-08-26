@@ -7,6 +7,7 @@ import com.example.svaiyapu.petutrecht.data.Model.Pet;
 import com.example.svaiyapu.petutrecht.data.Model.RemoteResponse;
 import com.example.svaiyapu.petutrecht.data.PetDataSource;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -22,10 +23,10 @@ import retrofit2.http.Headers;
  */
 public class PetRemoteDataSource implements PetDataSource {
 
-    private static PetRemoteDataSource INSTANCE;
+    private static PetRemoteDataSource INSTANCE = null;
     private static final String LOG_TAG = "PetRemoteDataSource";
 
-    List<Pet> mCachedPets;
+    private List<Pet> mCachedPets;
 
     /**
      * Marks the cache as invalid, to force an update the next time data is requested.
@@ -60,9 +61,9 @@ public class PetRemoteDataSource implements PetDataSource {
             @Override
             public void onResponse(Call<RemoteResponse> call, Response<RemoteResponse> response) {
                 if (response.isSuccessful()) {
-                    Log.d(LOG_TAG, "Pet data fetched from json");
-                    List<Pet> pets = response.body().getData();
-                    mCachedPets = pets;
+                    Log.d(LOG_TAG, "getPets : Pet data fetched from json");
+                    final List<Pet> pets = response.body().getData();
+                    refreshCache(pets);
                     callback.onPetsLoaded(pets);
                 } else {
                     // an http error code from server like 401
@@ -77,5 +78,19 @@ public class PetRemoteDataSource implements PetDataSource {
                 callback.onDataNotAvailable();
             }
         });
+    }
+
+    private void refreshCache(List<Pet> pets) {
+        if (mCachedPets == null) {
+            mCachedPets = new ArrayList<>();
+        }
+        mCachedPets.clear();
+        mCachedPets.addAll(pets);
+        mCacheIsDirty = false;
+    }
+
+    @Override
+    public void invalidateCache() {
+        mCacheIsDirty = true;
     }
 }

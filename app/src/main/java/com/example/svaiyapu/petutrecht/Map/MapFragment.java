@@ -53,6 +53,8 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
+        mPresenter = new MapPresenter(this);
+
         // Obtain the MapView and get notified when the map is ready to be used.
         mMapView = (MapView) v.findViewById(R.id.map_view);
         mMapView.onCreate(savedInstanceState);

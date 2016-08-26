@@ -3,7 +3,9 @@ package com.example.svaiyapu.petutrecht.data.Remote;
 import com.example.svaiyapu.petutrecht.data.Model.RemoteResponse;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
@@ -29,7 +31,9 @@ public class PetRetrofit {
         Call<RemoteResponse> petResponse();
     }
 
-    private static PetRetrofit INSTANCE;
+    private static PetRetrofit INSTANCE = null;
+
+    private static Retrofit sRetrofit = null;
 
     public static PetRetrofit getInstance() {
         if (INSTANCE == null) {
@@ -38,18 +42,28 @@ public class PetRetrofit {
         return INSTANCE;
     }
 
+    private void buildRetrofitInstance() {
+        if(sRetrofit == null) {
+            OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
+                    .connectTimeout(60, TimeUnit.SECONDS)
+                    .readTimeout(60, TimeUnit.SECONDS)
+                    .writeTimeout(60, TimeUnit.SECONDS)
+                    .build();
+
+            sRetrofit = new Retrofit.Builder()
+                    .baseUrl(API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(okHttpClient)
+                    .build();
+        }
+    }
+
     public Call<RemoteResponse> getCallInstance() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
+        buildRetrofitInstance();
         // Create an instance of our Pet backendless API interface.
-        PetResponse petResponse = retrofit.create(PetResponse.class);
-
+        PetResponse petResponse = sRetrofit.create(PetResponse.class);
         // Create a call instance for looking up the json.
         Call<RemoteResponse> call = petResponse.petResponse();
-
         return call;
     }
 

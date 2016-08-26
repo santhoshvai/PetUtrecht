@@ -19,4 +19,6 @@ public interface PetDataSource {
     }
 
     void getPets(@NonNull LoadPetsCallback callback);
+
+    void invalidateCache();
 }

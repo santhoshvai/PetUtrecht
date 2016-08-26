@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--card-view-->
+    <dimen name="card_layout_margin">4dp</dimen>
+    <integer name="grid_column_count">2</integer>
+</resources>

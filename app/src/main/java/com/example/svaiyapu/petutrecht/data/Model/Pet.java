@@ -27,7 +27,7 @@ public class Pet {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public String getImg_colour() {
-        return img_colour;
+        return img_colour.trim();
     }
 
     public String getBreed() {
