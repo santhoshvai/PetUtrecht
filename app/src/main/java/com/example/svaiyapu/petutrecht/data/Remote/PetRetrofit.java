@@ -27,7 +27,7 @@ public class PetRetrofit {
                 "application-type: REST",
                 "Content-Type: application/json"
         })
-        @GET("Pet")
+        @GET("Pet?pageSize=20")
         Call<RemoteResponse> petResponse();
     }
 

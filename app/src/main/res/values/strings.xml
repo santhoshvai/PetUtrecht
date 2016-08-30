@@ -1,4 +1,22 @@
 <resources>
     <string name="app_name">Pet Utrecht</string>
+    <string name="transition_name">pet_image_shared</string>
+    <string name="detail_Activity_pet_name">PET_NAME</string>
     <string name="title_activity_main">Main</string>
+    <string name="title_activity_detail">DetailActivity</string>
+    <string name="breed">Breed</string>
+    <string name="example_breed">German Sheperd</string>
+    <string name="age">Age</string>
+    <string name="example_age">Adult</string>
+    <string name="gender">Gender</string>
+    <string name="example_gender">Male</string>
+    <string name="description">Description</string>
+    <string name="example_description">Blacky is a beautiful German Shepherd dog, born in 2012. He came here because its owner, unfortunately, could not care for him.
+
+We find Blacky real (German) Shepherd lovers, if you include describes a typical German Shepherd, thats it Blacky .. He is active and needs lots of exercise, twice around the block is not enough for him. Blacky want to run, fetch (though he must learn it properly issue a bit), work with you and work for you. A real working dog!
+
+He is reluctant to strangers, alert as it should be and very faithful and loyal to his boss. German Shepherds are true one-man dogs, they choose one or two bosses from where they pass through the fire. But when a stranger quietly acquainted with Blacky, hes fine to be just stroked.
+
+Blacky knows the basic commands, but there is much more to this dog than just the basics. We are looking also for somebody Blacky which significantly him go to work and put it to work, because thats where Blacky dreams. Agility, flyball, biking, running, obedience training, and theres more where he will be well suited for.
+    </string>
 </resources>

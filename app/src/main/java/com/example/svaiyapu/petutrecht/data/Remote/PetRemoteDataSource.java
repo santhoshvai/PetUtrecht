@@ -10,12 +10,11 @@ import com.example.svaiyapu.petutrecht.data.PetDataSource;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.GET;
-import retrofit2.http.Headers;
 
 
 /**
@@ -26,7 +25,7 @@ public class PetRemoteDataSource implements PetDataSource {
     private static PetRemoteDataSource INSTANCE = null;
     private static final String LOG_TAG = "PetRemoteDataSource";
 
-    private List<Pet> mCachedPets;
+    private Map<String, Pet> mCachedPets;
 
     /**
      * Marks the cache as invalid, to force an update the next time data is requested.
@@ -53,7 +52,8 @@ public class PetRemoteDataSource implements PetDataSource {
     public void getPets(final @NonNull LoadPetsCallback callback) {
         // Respond immediately with cache if available and not dirty
         if (mCachedPets != null && !mCacheIsDirty) {
-            callback.onPetsLoaded(mCachedPets);
+            callback.onPetsLoaded(
+                    new ArrayList<>(mCachedPets.values()));
             return;
         }
         Call<RemoteResponse> call = PetRetrofit.getInstance().getCallInstance();
@@ -64,7 +64,8 @@ public class PetRemoteDataSource implements PetDataSource {
                     Log.d(LOG_TAG, "getPets : Pet data fetched from json");
                     final List<Pet> pets = response.body().getData();
                     refreshCache(pets);
-                    callback.onPetsLoaded(pets);
+                    callback.onPetsLoaded(
+                            new ArrayList<>(mCachedPets.values()));
                 } else {
                     // an http error code from server like 401
                     Log.e(LOG_TAG, response.errorBody().toString());
@@ -82,15 +83,22 @@ public class PetRemoteDataSource implements PetDataSource {
 
     private void refreshCache(List<Pet> pets) {
         if (mCachedPets == null) {
-            mCachedPets = new ArrayList<>();
+            mCachedPets = new LinkedHashMap<>();
         }
         mCachedPets.clear();
-        mCachedPets.addAll(pets);
+        for (Pet pet : pets) {
+            mCachedPets.put(pet.getName(), pet);
+        }
         mCacheIsDirty = false;
     }
 
     @Override
     public void invalidateCache() {
         mCacheIsDirty = true;
+    }
+
+    @Override
+    public Pet getPet(@NonNull String petName) {
+        return mCachedPets.get(petName);
     }
 }

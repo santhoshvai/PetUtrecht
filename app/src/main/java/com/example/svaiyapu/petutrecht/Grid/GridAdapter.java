@@ -1,7 +1,10 @@
 package com.example.svaiyapu.petutrecht.Grid;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.svaiyapu.petutrecht.Detail.DetailActivity;
 import com.example.svaiyapu.petutrecht.R;
 import com.example.svaiyapu.petutrecht.Util.DynamicHeightImageView;
 import com.example.svaiyapu.petutrecht.Util.PetUtil;
@@ -27,8 +32,12 @@ public class GridAdapter extends
         RecyclerView.Adapter<GridAdapter.ViewHolder> {
 
     private static final String LOG_TAG = "GridAdapter";
+    // Store a member variable for the contacts
+    private List<Pet> mPets;
+    // Store the context for easy access
+    private Activity mActivity;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView titleTextView;
         public TextView breedTextView;
         public DynamicHeightImageView petImageView;
@@ -40,24 +49,37 @@ public class GridAdapter extends
             titleTextView = (TextView) itemView.findViewById(R.id.pet_title);
             breedTextView = (TextView) itemView.findViewById(R.id.pet_breed);
             petImageView = (DynamicHeightImageView) itemView.findViewById(R.id.pet_thumbnail);
+            // Attach a click listener to the entire row view
+            itemView.setOnClickListener(this);
+        }
+
+        // Handles the grid item being clicked
+        @Override
+        public void onClick(View view) {
+            int position = getLayoutPosition(); // gets item position
+            Pet pet = mPets.get(position);
+            Intent intent = new Intent(mActivity, DetailActivity.class);
+            String pet_message = mActivity.getResources().getString(R.string.detail_Activity_pet_name);
+            intent.putExtra(pet_message, pet.getName());
+            ActivityOptionsCompat options = ActivityOptionsCompat.
+                    makeSceneTransitionAnimation(
+                            mActivity, // launching activity
+                            petImageView, // shared view
+                            mActivity.getResources().getString(R.string.transition_name)); // identifier
+            mActivity.startActivity(intent, options.toBundle());
         }
 
     }
 
-    // Store a member variable for the contacts
-    private List<Pet> mPets;
-    // Store the context for easy access
-    private Context mContext;
-
     // Pass in the pet array into the constructor
-    public GridAdapter(Context context, List<Pet> pets) {
+    public GridAdapter(Activity activity, List<Pet> pets) {
         mPets = pets;
-        mContext = context;
+        mActivity = activity;
     }
 
     // Easy access to the context object in the recyclerview
     private Context getContext() {
-        return mContext;
+        return mActivity;
     }
 
     // inflate the item layout and create the holder
@@ -96,7 +118,7 @@ public class GridAdapter extends
         holder.petImageView.setHeightRatio(((double)pet.getImg_height())
                 /pet.getImg_width());
 
-        Picasso.with(mContext)
+        Picasso.with(mActivity)
                 .load(pet.getImg_primary()) // image url goes here
                 .placeholder(R.drawable.placeholder)
                 .into(holder.petImageView);
