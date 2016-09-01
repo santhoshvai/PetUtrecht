@@ -5,22 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.svaiyapu.petutrecht.Detail.DetailActivity;
 import com.example.svaiyapu.petutrecht.R;
 import com.example.svaiyapu.petutrecht.Util.DynamicHeightImageView;
 import com.example.svaiyapu.petutrecht.Util.PetUtil;
 import com.example.svaiyapu.petutrecht.data.Model.Pet;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -61,11 +58,16 @@ public class GridAdapter extends
             Intent intent = new Intent(mActivity, DetailActivity.class);
             String pet_message = mActivity.getResources().getString(R.string.detail_Activity_pet_name);
             intent.putExtra(pet_message, pet.getName());
+            Pair pet_photo_pair = Pair.create(
+                    petImageView, // shared view
+                    mActivity.getResources().getString(R.string.transition_name_image) // identifier
+            );
+
             ActivityOptionsCompat options = ActivityOptionsCompat.
                     makeSceneTransitionAnimation(
                             mActivity, // launching activity
-                            petImageView, // shared view
-                            mActivity.getResources().getString(R.string.transition_name)); // identifier
+                            pet_photo_pair
+                    );
             mActivity.startActivity(intent, options.toBundle());
         }
 

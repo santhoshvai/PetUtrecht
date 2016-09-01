@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:id="@+id/activity_contact_rl_container">
+
+<android.support.design.widget.FloatingActionButton
+    android:id="@+id/activity_contact_fab"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:layout_centerInParent="true"
+    android:transitionName="@string/transition_fab"
+    app:fabSize="normal"
+    app:pressedTranslationZ="8dp"
+    app:backgroundTint="@color/colorAccent"
+    app:elevation="0dp"/>
+
+<LinearLayout
+    android:id="@+id/activity_contact_ll_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:visibility="invisible"
+    tools:visibility="invisible"
+    android:weightSum="4">
+
+    <TextView
+        android:id="@+id/login_failed_message"
+        android:text="hello2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        android:id="@+id/login_message"
+        android:text="hello"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center" />
+</LinearLayout>
+
+
+<ImageView
+    android:id="@+id/activity_contact_iv_close"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/activity_horizontal_margin"
+    android:visibility="invisible"
+    android:src="@drawable/ic_close_white_36dp"
+    android:background="?android:attr/selectableItemBackground"
+    />
+
+</RelativeLayout>

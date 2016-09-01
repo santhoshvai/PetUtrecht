@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Pet Utrecht</string>
-    <string name="transition_name">pet_image_shared</string>
+    <string name="transition_name_image">pet_image_shared</string>
+    <string name="transition_name_text">pet_text_shared</string>
+    <string name="transition_fab">transition_fab</string>
     <string name="detail_Activity_pet_name">PET_NAME</string>
     <string name="title_activity_main">Main</string>
     <string name="title_activity_detail">DetailActivity</string>
