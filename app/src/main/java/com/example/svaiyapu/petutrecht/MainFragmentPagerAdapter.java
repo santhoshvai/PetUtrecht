@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
 import com.example.svaiyapu.petutrecht.Grid.GridFragment;
 import com.example.svaiyapu.petutrecht.Map.MapFragment;
 
@@ -45,4 +46,6 @@ public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         return tabTitles[position];
     }
+
+
 }

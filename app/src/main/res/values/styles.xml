@@ -21,6 +21,11 @@
     <style name="AppTheme.Contact">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="colorControlNormal">@android:color/primary_text_light</item>
+        <item name="colorControlActivated">@android:color/primary_text_light</item>
+        <item name="colorControlHighlight">@android:color/darker_gray</item>
+        <item name="android:textColorPrimary">@android:color/primary_text_dark</item>
+        <item name="colorButtonNormal">@android:color/primary_text_light</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>

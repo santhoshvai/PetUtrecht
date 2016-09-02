@@ -11,9 +11,4 @@
             @transition/shared_main_detail
         </item>
     </style>
-
-    <style name="AppTheme.Contact">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
 </resources>

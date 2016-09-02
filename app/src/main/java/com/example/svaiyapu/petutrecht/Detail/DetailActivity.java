@@ -55,6 +55,11 @@ public class DetailActivity extends AppCompatActivity implements DetailContract.
             slide.setInterpolator(AnimationUtils.loadInterpolator(this,
                     android.R.interpolator.linear_out_slow_in));
             slide.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
+            // best practice - exclude window decors during shared element transition
+            // Video: a window into transitions - google IO 2016
+            slide.excludeTarget(android.R.id.statusBarBackground, true);
+            slide.excludeTarget(android.R.id.navigationBarBackground, true);
+
             transitions.addTransition(slide);
             transitions.addTransition(new Fade());
             getWindow().setEnterTransition(transitions);

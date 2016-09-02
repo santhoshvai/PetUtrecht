@@ -11,42 +11,87 @@ import android.transition.Fade;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.example.svaiyapu.petutrecht.R;
 import com.example.svaiyapu.petutrecht.Util.GUIUtils;
+import com.example.svaiyapu.petutrecht.Util.PetUtil;
 
 public class ContactActivity extends AppCompatActivity {
 
     RelativeLayout mRlContainer;
     FloatingActionButton mFab;
     LinearLayout mLlContainer;
-    ImageView mIvClose;
+    ImageView mCloseBtn;
+    Button mSendMailButton;
+    EditText mNameEditText;
+    EditText mMessageEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+        mRlContainer = (RelativeLayout) findViewById(R.id.activity_contact_container);
+        mFab = (FloatingActionButton) findViewById(R.id.activity_contact_fab);
+        mLlContainer = (LinearLayout) findViewById(R.id.activity_contact_ll_container);
+        mCloseBtn = (ImageView) findViewById(R.id.activity_contact_close_btn);
+        mSendMailButton = (Button) findViewById(R.id.activity_contact_send_btn);
+        mNameEditText = (EditText) findViewById(R.id.etUsername);
+        mMessageEditText = (EditText) findViewById(R.id.etMessage);
+
         if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) &&
                 (savedInstanceState == null)) {
+            scheduleStartPostponedTransition(mFab);
             setupEnterAnimation();
             setupExitAnimation();
         } else {
             initViews();
         }
-        mRlContainer = (RelativeLayout) findViewById(R.id.activity_contact_rl_container);
-        mFab = (FloatingActionButton) findViewById(R.id.activity_contact_fab);
-        mLlContainer = (LinearLayout) findViewById(R.id.activity_contact_ll_container);
-        mIvClose = (ImageView) findViewById(R.id.activity_contact_iv_close);
 
+        if(savedInstanceState != null) {
+            String name = savedInstanceState.getString("mNameEditText");
+            String message = savedInstanceState.getString("mMessageEditText");
+            mNameEditText.setText(name);
+            mMessageEditText.setText(message);
+        }
+
+        mSendMailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String name = mNameEditText.getText().toString();
+                String message = mMessageEditText.getText().toString();
+                PetUtil.composeEmail(view.getContext(), "mockPetAdopt@gmail.com",
+                        name, message);
+            }
+        });
+
+        mCloseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString("mNameEditText", mNameEditText.getText().toString());
+        outState.putString("mMessageEditText", mMessageEditText.getText().toString());
+        super.onSaveInstanceState(outState);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void setupEnterAnimation() {
+        // Postpone the shared element enter transition.
+        postponeEnterTransition();
         // start circular arc motion
         Transition transition = TransitionInflater.from(this)
                 .inflateTransition(R.transition.changebounds_with_arcmotion);
@@ -58,6 +103,7 @@ public class ContactActivity extends AppCompatActivity {
             @Override
             public void onTransitionEnd(Transition transition) {
                 transition.removeListener(this);
+                // on the end of arc motion, start circular reveal
 				animateRevealShow();
             }
             @Override
@@ -84,21 +130,17 @@ public class ContactActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        // hop onto the main thread from a background thread
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
-                animation.setDuration(300);
+                animation.setDuration(getApplicationContext().getResources()
+                        .getInteger(android.R.integer.config_shortAnimTime));
                 mLlContainer.startAnimation(animation);
-                mIvClose.startAnimation(animation);
+                mCloseBtn.startAnimation(animation);
                 mLlContainer.setVisibility(View.VISIBLE);
-                mIvClose.setVisibility(View.VISIBLE);
-                mIvClose.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        onBackPressed();
-                    }
-                });
+                mCloseBtn.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -131,6 +173,34 @@ public class ContactActivity extends AppCompatActivity {
         Fade fade = new Fade();
         getWindow().setReturnTransition(fade);
         fade.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
+    }
+
+    /**
+     * Schedules the shared element transition to be started immediately
+     * after the shared element has been measured and laid out within the
+     * activity's view hierarchy. Some common places where it might make
+     * sense to call this method are:
+     *
+     * (1) Inside a Fragment's onCreateView() method (if the shared element
+     *     lives inside a Fragment hosted by the called Activity).
+     *
+     * (2) Inside a Picasso Callback object (if you need to wait for Picasso to
+     *     asynchronously load/scale a bitmap before the transition can begin).
+     *
+     * (3) Inside a LoaderCallback's onLoadFinished() method (if the shared
+     *     element depends on data queried by a Loader).
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void scheduleStartPostponedTransition(final View sharedElement) {
+        sharedElement.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
+                        startPostponedEnterTransition();
+                        return true;
+                    }
+                });
     }
 
 }

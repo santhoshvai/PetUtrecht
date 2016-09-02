@@ -3,9 +3,13 @@ package com.example.svaiyapu.petutrecht;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import com.example.svaiyapu.petutrecht.Grid.GridFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,13 +18,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(LOG_TAG, "onCreate");
         setContentView(R.layout.activity_main);
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(new MainFragmentPagerAdapter(getSupportFragmentManager(),
-                    MainActivity.this));
+        FragmentPagerAdapter pageAdapter = new MainFragmentPagerAdapter(getSupportFragmentManager(),
+                MainActivity.this);
+        viewPager.setAdapter(pageAdapter);
 
         // Give the TabLayout the ViewPager
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);

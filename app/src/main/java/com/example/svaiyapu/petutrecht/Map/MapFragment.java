@@ -59,7 +59,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         mMapView = (MapView) v.findViewById(R.id.map_view);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
-
         return v;
     }
 
@@ -123,31 +122,41 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     @Override
     public void onResume() {
         super.onResume();
-        mMapView.onResume();
+        if(mMapView != null) {
+            mMapView.onResume();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mMapView.onPause();
+        if(mMapView != null) {
+            mMapView.onPause();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mMapView.onDestroy();
+        if(mMapView != null) {
+            mMapView.onDestroy();
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mMapView.onSaveInstanceState(outState);
+        if(mMapView != null) {
+            mMapView.onSaveInstanceState(outState);
+        }
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mMapView.onLowMemory();
+        if(mMapView != null) {
+            mMapView.onLowMemory();
+        }
     }
 
 }
