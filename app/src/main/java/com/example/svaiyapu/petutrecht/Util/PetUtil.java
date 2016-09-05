@@ -7,6 +7,11 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.widget.Toast;
 
+import com.example.svaiyapu.petutrecht.data.Model.Pet;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by svaiyapu on 8/26/16.
  */
@@ -16,6 +21,9 @@ public class PetUtil {
     }
     public static boolean isCat(String type) {
         return type.startsWith("C");
+    }
+    public static boolean isAll(String type) {
+        return type.startsWith("A");
     }
 
     /**
@@ -42,5 +50,25 @@ public class PetUtil {
         } else {
             Toast.makeText(context, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static List<Pet> filterDogs(List<Pet> pets) {
+        List<Pet> dogs = new ArrayList<>();
+        for(Pet p: pets) {
+            if(PetUtil.isDog(p.getType())) {
+                dogs.add(p);
+            }
+        }
+        return dogs;
+    }
+
+    public static List<Pet> filterCats(List<Pet> pets) {
+        List<Pet> dogs = new ArrayList<>();
+        for(Pet p: pets) {
+            if(PetUtil.isCat(p.getType())) {
+                dogs.add(p);
+            }
+        }
+        return dogs;
     }
 }

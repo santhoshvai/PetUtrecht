@@ -1,7 +1,11 @@
 package com.example.svaiyapu.petutrecht.Grid;
 
+import android.annotation.TargetApi;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.SharedElementCallback;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -9,13 +13,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.example.svaiyapu.petutrecht.R;
+import com.example.svaiyapu.petutrecht.Util.IntentUtil;
 import com.example.svaiyapu.petutrecht.Util.PetUtil;
 import com.example.svaiyapu.petutrecht.data.Model.Pet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by svaiyapu on 8/26/16.
@@ -126,11 +133,7 @@ public class GridFragment extends Fragment implements GridContract.View {
             }
         }
         else {
-            String str = "";
-            if(getArguments() != null) {
-                str = getArguments().getString(mPetType);
-            }
-            Log.e(LOG_TAG, "mPetType is null" + str);
+            Log.e(LOG_TAG, "mPetType is null");
         }
     }
 
@@ -138,4 +141,51 @@ public class GridFragment extends Fragment implements GridContract.View {
     public void setPresenter(GridContract.Presenter presenter) {
         mPresenter = presenter;
     }
+
+
+
+    @TargetApi(21)
+    @Override
+    public View activityReenter(Intent data) {
+        if (data == null) {
+            return null;
+        }
+        Log.d(LOG_TAG, "activityReenter - start");
+        // Start the postponed transition when the recycler view is ready to be drawn.
+//        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//            @Override
+//            public boolean onPreDraw() {
+//                Log.d(LOG_TAG, "activityReenter - preDraw");
+//                mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+////                mRecyclerView.setVisibility(View.VISIBLE);
+//                return true;
+//            }
+//        });
+        final int selectedItem = data.getIntExtra(IntentUtil.SELECTED_ITEM_POSITION, 0);
+        mRecyclerView.invalidate();
+        mRecyclerView.scrollToPosition(selectedItem);
+
+        final GridAdapter.ViewHolder holder = (GridAdapter.ViewHolder) mRecyclerView.
+                findViewHolderForAdapterPosition(selectedItem);
+        if (holder == null) {
+            Log.w(LOG_TAG, "activityReenter: Holder is null, remapping cancelled.");
+            return null;
+        }
+        return holder.petImageView;
+
+//        setExitSharedElementCallback(new SharedElementCallback() {
+//            @Override
+//            public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+//                Log.d(LOG_TAG, "activityReenter - onMapSharedElements");
+//                String transitionName = holder.petImageView.getTransitionName();
+//                names.clear();
+//                sharedElements.clear();
+//                names.add(transitionName);
+//                sharedElements.put(transitionName, holder.petImageView);
+//            }
+//        });
+
+    }
+
+
 }

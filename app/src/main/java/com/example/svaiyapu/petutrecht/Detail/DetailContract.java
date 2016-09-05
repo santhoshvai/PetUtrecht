@@ -10,10 +10,10 @@ import java.util.List;
  */
 public class DetailContract {
     interface View extends BaseContract.BaseView<Presenter> {
-        void showDetail(Pet pet);
+        void showDetail(Pet pet, List<Pet> pets);
     }
 
     interface Presenter extends BaseContract.BasePresenter {
-        void loadPet(String petName);
+        void loadPet(String petName, String petType);
     }
 }

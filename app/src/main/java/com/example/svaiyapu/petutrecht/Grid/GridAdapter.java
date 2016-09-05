@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
@@ -11,11 +12,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.TextView;
 
 import com.example.svaiyapu.petutrecht.Detail.DetailActivity;
 import com.example.svaiyapu.petutrecht.R;
 import com.example.svaiyapu.petutrecht.Util.DynamicHeightImageView;
+import com.example.svaiyapu.petutrecht.Util.IntentUtil;
 import com.example.svaiyapu.petutrecht.Util.PetUtil;
 import com.example.svaiyapu.petutrecht.data.Model.Pet;
 import com.squareup.picasso.Picasso;
@@ -56,19 +59,32 @@ public class GridAdapter extends
             int position = getLayoutPosition(); // gets item position
             Pet pet = mPets.get(position);
             Intent intent = new Intent(mActivity, DetailActivity.class);
-            String pet_message = mActivity.getResources().getString(R.string.detail_Activity_pet_name);
-            intent.putExtra(pet_message, pet.getName());
-            Pair pet_photo_pair = Pair.create(
-                    petImageView, // shared view
-                    mActivity.getResources().getString(R.string.transition_name_image) // identifier
-            );
-
-            ActivityOptionsCompat options = ActivityOptionsCompat.
-                    makeSceneTransitionAnimation(
-                            mActivity, // launching activity
-                            pet_photo_pair
-                    );
-            mActivity.startActivity(intent, options.toBundle());
+            intent.putExtra(IntentUtil.GRID_TO_DETAIL_PET_NAME, pet.getName());
+            intent.putExtra(IntentUtil.GRID_TO_DETAIL_PET_TYPE, pet.getType());
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Pair pet_photo_pair = Pair.create(
+                        petImageView, // shared view
+                        petImageView.getTransitionName() // identifier
+                );
+                // best practice - inlcude window decors during shared element transition
+                // Video: a window into transitions - google IO 2016
+                View navigationBar = mActivity.findViewById(android.R.id.navigationBarBackground);
+                Pair nav_bar_pair = Pair.create(navigationBar, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME);
+                View statusBar = mActivity.findViewById(android.R.id.statusBarBackground);
+                Pair status_bar_pair = Pair.create(statusBar, Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME);
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(
+                                mActivity, // launching activity
+                                pet_photo_pair,
+                                nav_bar_pair,
+                                status_bar_pair
+                        );
+                mActivity.startActivityForResult(intent,
+                        IntentUtil.REQUEST_CODE,
+                        options.toBundle());
+            } else {
+                mActivity.startActivity(intent);
+            }
         }
 
     }
@@ -124,6 +140,9 @@ public class GridAdapter extends
                 .load(pet.getImg_primary()) // image url goes here
                 .placeholder(R.drawable.placeholder)
                 .into(holder.petImageView);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            holder.petImageView.setTransitionName(pet.getImg_primary());
+        }
     }
 
     // determine the number of items

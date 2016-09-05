@@ -31,7 +31,7 @@ public class GridPresenter implements GridContract.Presenter {
         PetRemoteDataSource.getInstance().getPets(new PetDataSource.LoadPetsCallback() {
             @Override
             public void onPetsLoaded(List<Pet> pets) {
-                List<Pet> dogs = filterDogs(pets);
+                List<Pet> dogs = PetUtil.filterDogs(pets);
                 mGridView.showGrid(dogs);
                 mGridView.hideProgressbar();
             }
@@ -49,7 +49,7 @@ public class GridPresenter implements GridContract.Presenter {
         PetRemoteDataSource.getInstance().getPets(new PetDataSource.LoadPetsCallback() {
             @Override
             public void onPetsLoaded(List<Pet> pets) {
-                List<Pet> cats = filterCats(pets);
+                List<Pet> cats = PetUtil.filterCats(pets);
                 mGridView.showGrid(cats);
                 mGridView.hideProgressbar();
             }
@@ -64,26 +64,6 @@ public class GridPresenter implements GridContract.Presenter {
 
     @Override
     public void start() {
-    }
-
-    private List<Pet> filterDogs(List<Pet> pets) {
-        List<Pet> dogs = new ArrayList<>();
-        for(Pet p: pets) {
-            if(PetUtil.isDog(p.getType())) {
-                dogs.add(p);
-            }
-        }
-        return dogs;
-    }
-
-    private List<Pet> filterCats(List<Pet> pets) {
-        List<Pet> dogs = new ArrayList<>();
-        for(Pet p: pets) {
-            if(PetUtil.isCat(p.getType())) {
-                dogs.add(p);
-            }
-        }
-        return dogs;
     }
 
     @Override

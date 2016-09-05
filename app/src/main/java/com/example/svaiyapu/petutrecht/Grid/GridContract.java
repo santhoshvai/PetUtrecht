@@ -1,5 +1,7 @@
 package com.example.svaiyapu.petutrecht.Grid;
 
+import android.content.Intent;
+
 import com.example.svaiyapu.petutrecht.BaseContract;
 import com.example.svaiyapu.petutrecht.data.Model.Pet;
 
@@ -14,6 +16,7 @@ public interface GridContract {
         void showGrid(List<Pet> pets);
         void showProgressbar();
         void hideProgressbar();
+        android.view.View activityReenter(Intent data);
     }
 
     interface Presenter extends BaseContract.BasePresenter {

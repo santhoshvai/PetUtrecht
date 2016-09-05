@@ -1,12 +1,11 @@
 package com.example.svaiyapu.petutrecht.Detail;
 
-import android.app.ActivityOptions;
+import android.annotation.TargetApi;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
@@ -15,26 +14,19 @@ import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.example.svaiyapu.petutrecht.Contact.ContactActivity;
 import com.example.svaiyapu.petutrecht.R;
+import com.example.svaiyapu.petutrecht.Util.IntentUtil;
 import com.example.svaiyapu.petutrecht.data.Model.Pet;
-import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 public class DetailActivity extends AppCompatActivity implements DetailContract.View {
 
     private DetailContract.Presenter mPresenter;
-    private TextView mBreedTextView;
-    private TextView mAgeTextView;
-    private TextView mDescriptionTextView;
-    private TextView mGenderTextView;
-    private TextView mTitleTextView;
-    private FloatingActionButton mFab;
     private AppCompatActivity mAppCompatActivity;
+    private ViewPager mViewPager;
+    private int mInitialItem;
 
     private final View.OnClickListener navigationOnClickListener =
             new View.OnClickListener() {
@@ -69,41 +61,35 @@ public class DetailActivity extends AppCompatActivity implements DetailContract.
         toolbar.setNavigationOnClickListener(navigationOnClickListener);
 
         Intent intent = getIntent();
-        final String message_pet_name = intent.getStringExtra(getResources()
-                .getString(R.string.detail_Activity_pet_name));
+        final String message_pet_name = intent.getStringExtra(IntentUtil.GRID_TO_DETAIL_PET_NAME);
+        final String message_pet_type = intent.getStringExtra(IntentUtil.GRID_TO_DETAIL_PET_TYPE);
 
         mPresenter = new DetailPresenter(this);
+        mPresenter.loadPet(message_pet_name, message_pet_type);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startContactActivity(message_pet_name);
-            }
-        });
-
-        mTitleTextView = (TextView) findViewById(R.id.main_title);
-        mBreedTextView = (TextView) findViewById(R.id.breed_detail);
-        mAgeTextView = (TextView) findViewById(R.id.age_detail);
-        mDescriptionTextView = (TextView) findViewById(R.id.description_detail);
-        mGenderTextView = (TextView) findViewById(R.id.gender_detail);
-        mFab = (FloatingActionButton) findViewById(R.id.fab);
-
-        mPresenter.loadPet(message_pet_name);
         super.onCreate(savedInstanceState);
     }
 
-    private void startContactActivity(String petName) {
-        final Intent intent = new Intent(mAppCompatActivity, ContactActivity.class);
-        String pet_message_id = mAppCompatActivity.getResources().getString(R.string.detail_Activity_pet_name);
-        intent.putExtra(pet_message_id, petName);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ActivityOptions options =
-                    ActivityOptions.makeSceneTransitionAnimation(this, mFab, mFab.getTransitionName());
-            startActivity(intent, options.toBundle());
-        } else {
-            startActivity(intent);
-        }
+    private void setUpViewPager(List<Pet> pets) {
+        mViewPager = (ViewPager) findViewById(R.id.detail_pager);
+        mViewPager.setAdapter(new DetailViewPagerAdapter(this, pets));
+        mViewPager.setCurrentItem(mInitialItem);
+
+        mViewPager.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (mViewPager.getChildCount() > 0) {
+                    mViewPager.removeOnLayoutChangeListener(this);
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        startPostponedEnterTransition();
+                    }
+                }
+            }
+        });
+
+        mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.padding_mini));
+        mViewPager.setPageMarginDrawable(R.drawable.page_margin);
     }
 
     @Override
@@ -118,42 +104,39 @@ public class DetailActivity extends AppCompatActivity implements DetailContract.
     }
 
     @Override
-    public void showDetail(Pet pet) {
-        int image_vibrant_color = Color.parseColor(pet.getImg_colour());
-
-        // change the status bar color - only for lollipop and above this is possible
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.setStatusBarColor(image_vibrant_color);
-        }
-        mTitleTextView.setText(pet.getName());
-        mBreedTextView.setText(pet.getBreed());
-        mAgeTextView.setText(pet.getAge());
-        mGenderTextView.setText(pet.getGender());
-        mDescriptionTextView.setText(pet.getDescription());
-        Picasso.with(this).
-                load(pet.getImg_primary()).
-                error(R.drawable.placeholder).
-                into((ImageView) findViewById(R.id.main_backdrop),
-                        new com.squareup.picasso.Callback() {
-                            @Override
-                            public void onSuccess() {
-                                //Success image already loaded into the view
-                                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    startPostponedEnterTransition();
-                                }
-                            }
-
-                            @Override
-                            public void onError() {
-                                // Error placeholder image already loaded into the view, do further handling of this situation here
-
-                            }
-                        });
+    public void showDetail(Pet pet, List<Pet> pets) {
+        // set the initial item
+        mInitialItem = pets.indexOf(pet);
+        // setup viewpager
+        setUpViewPager(pets);
     }
 
     @Override
     public void setPresenter(DetailContract.Presenter presenter) {
         mPresenter = presenter;
+    }
+
+    @TargetApi(21)
+    private void setActivityResult() {
+        if (mInitialItem == mViewPager.getCurrentItem()) {
+            setResult(RESULT_OK);
+            return;
+        }
+//        getWindow().setExitTransition(new Fade());
+        Intent intent = new Intent();
+        intent.putExtra(IntentUtil.SELECTED_ITEM_POSITION, mViewPager.getCurrentItem());
+        setResult(RESULT_OK, intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        setActivityResult();
+        super.onBackPressed();
+    }
+
+    @Override
+    public void finishAfterTransition() {
+        setActivityResult();
+        super.finishAfterTransition();
     }
 }
