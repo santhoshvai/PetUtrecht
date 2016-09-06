@@ -2,25 +2,24 @@ package com.example.svaiyapu.petutrecht;
 
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.SharedElementCallback;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.transition.Fade;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 
 import com.example.svaiyapu.petutrecht.Grid.GridContract;
-import com.example.svaiyapu.petutrecht.Grid.GridFragment;
-
-import java.util.List;
-import java.util.Map;
+import com.example.svaiyapu.petutrecht.Util.IntentUtil;
+import com.example.svaiyapu.petutrecht.Util.MainSharedElementCallback;
+import com.example.svaiyapu.petutrecht.Util.TransitionCallback;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +29,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Listener to reset shared element exit transition callbacks.
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getSharedElementExitTransition().addListener(new TransitionCallback() {
+                @Override
+                @TargetApi(21)
+                public void onTransitionEnd(Transition transition) {
+                    ((Activity) MainActivity.this).setExitSharedElementCallback(null);
+                }
+            });
+        }
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -46,42 +56,28 @@ public class MainActivity extends AppCompatActivity {
     @TargetApi(21)
     @Override
     public void onActivityReenter(int resultCode, Intent data) {
-//        getWindow().setReenterTransition(new Fade());
-
+        if (data == null) {
+            return;
+        }
+        if(! IntentUtil.hasAll(data,
+                IntentUtil.SELECTED_ITEM_POSITION,
+                IntentUtil.DETAIL_TO_GRID_PET_TYPE)) {
+            Log.e(LOG_TAG, "onActivityReenter - Intent does not have everything");
+            Log.e(LOG_TAG, IntentUtil.intentToString(data));
+            return;
+        }
         FragmentManager fm = getSupportFragmentManager();
         for(Fragment fragment: fm.getFragments()) {
             if(fragment instanceof GridContract.View) {
-                final View view = ((GridContract.View)fragment).activityReenter(data);
+                View view = ((GridContract.View)fragment).activityReenter(data);
                 if(view != null) {
-//                    postponeEnterTransition();
                     MainSharedElementCallback mainSharedElementCallback = new MainSharedElementCallback();
                     mainSharedElementCallback.setSharedView(view);
                     setExitSharedElementCallback(mainSharedElementCallback);
-//                    setExitSharedElementCallback(new SharedElementCallback() {
-//                        @Override
-//                        public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-//                            if(view != null) {
-//                                Log.d(LOG_TAG, "onMapSharedElements - view not null");
-////                                names.clear();
-////                                sharedElements.clear();
-//                                names.add(view.getTransitionName());
-//                                sharedElements.put(view.getTransitionName(), view);
-//                            }
-//                        }
-//                    });
-//                    view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-//                        @Override
-//                        public boolean onPreDraw() {
-//                            view.getViewTreeObserver().removeOnPreDrawListener(this);
-////                            startPostponedEnterTransition();
-//                            return true;
-//                    }
-//                    });
                 }
 
             }
         }
-
     }
 
 }

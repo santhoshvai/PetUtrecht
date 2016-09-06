@@ -1,4 +1,7 @@
-<transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
+               xmlns:tools="http://schemas.android.com/tools"
+               tools:targetApi="21">
     <transitionSet>
         <targets>
             <target android:targetId="@id/main_backdrop" />
@@ -12,4 +15,10 @@
         <changeClipBounds />
         <changeImageTransform />
     </transitionSet>
+    <recolor>
+        <targets>
+            <target android:targetId="@android:id/statusBarBackground" />
+            <target android:targetId="@android:id/navigationBarBackground" />
+        </targets>
+    </recolor>
 </transitionSet>

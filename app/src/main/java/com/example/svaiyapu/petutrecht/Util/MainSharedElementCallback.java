@@ -1,4 +1,4 @@
-package com.example.svaiyapu.petutrecht;
+package com.example.svaiyapu.petutrecht.Util;
 
 import android.annotation.TargetApi;
 import android.app.SharedElementCallback;
@@ -24,16 +24,13 @@ public class MainSharedElementCallback extends SharedElementCallback {
         mapSharedElement(names, sharedElements, sharedView);
     }
 
-    public View getSharedView() {
-        return sharedView;
-    }
-
     public void setSharedView(View sharedView) {
         this.sharedView = sharedView;
     }
 
     /**
      * Maps all views that don't start with "android" namespace.
+     * Android namespace contains status bars, nav bars
      *
      * @param names All shared element names.
      * @return The obsolete shared element names.
@@ -78,8 +75,6 @@ public class MainSharedElementCallback extends SharedElementCallback {
         String transitionName = view.getTransitionName();
         names.add(transitionName);
         sharedElements.put(transitionName, view);
-        Log.d("callback", "mapNames: " + names.toString());
-        Log.d("callback", "mapSharedElements: " + sharedElements.toString());
     }
 
 }

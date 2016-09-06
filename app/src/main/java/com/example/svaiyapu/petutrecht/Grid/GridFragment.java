@@ -142,50 +142,40 @@ public class GridFragment extends Fragment implements GridContract.View {
         mPresenter = presenter;
     }
 
-
-
     @TargetApi(21)
     @Override
+    /**
+     * Return the new shared element to the host activity.
+     * Uses the intent selected position data to find that element
+     */
     public View activityReenter(Intent data) {
-        if (data == null) {
-            return null;
+        final String petType = data.getStringExtra(IntentUtil.DETAIL_TO_GRID_PET_TYPE);
+        // only act on the correct fragment type, see that using the pet type
+        if(PetUtil.petTypeEqual(petType, mPetType)){
+            if(mRecyclerView != null) { // on rotation mRecyclerView is null
+                getActivity().postponeEnterTransition();
+                // Start the postponed transition when the recycler view is ready to be drawn.
+                mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        getActivity().startPostponedEnterTransition();
+                        return true;
+                    }
+                });
+                final int selectedItem = data.getIntExtra(IntentUtil.SELECTED_ITEM_POSITION, 0);
+                mRecyclerView.scrollToPosition(selectedItem);
+
+                final GridAdapter.ViewHolder holder = (GridAdapter.ViewHolder) mRecyclerView.
+                        findViewHolderForAdapterPosition(selectedItem);
+                if (holder == null) {
+                    Log.e(LOG_TAG, "activityReenter: Holder is null, remapping cancelled.");
+                    return null;
+                }
+                return holder.petImageView;
+            }
         }
-        Log.d(LOG_TAG, "activityReenter - start");
-        // Start the postponed transition when the recycler view is ready to be drawn.
-//        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-//            @Override
-//            public boolean onPreDraw() {
-//                Log.d(LOG_TAG, "activityReenter - preDraw");
-//                mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-////                mRecyclerView.setVisibility(View.VISIBLE);
-//                return true;
-//            }
-//        });
-        final int selectedItem = data.getIntExtra(IntentUtil.SELECTED_ITEM_POSITION, 0);
-        mRecyclerView.invalidate();
-        mRecyclerView.scrollToPosition(selectedItem);
-
-        final GridAdapter.ViewHolder holder = (GridAdapter.ViewHolder) mRecyclerView.
-                findViewHolderForAdapterPosition(selectedItem);
-        if (holder == null) {
-            Log.w(LOG_TAG, "activityReenter: Holder is null, remapping cancelled.");
-            return null;
-        }
-        return holder.petImageView;
-
-//        setExitSharedElementCallback(new SharedElementCallback() {
-//            @Override
-//            public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-//                Log.d(LOG_TAG, "activityReenter - onMapSharedElements");
-//                String transitionName = holder.petImageView.getTransitionName();
-//                names.clear();
-//                sharedElements.clear();
-//                names.add(transitionName);
-//                sharedElements.put(transitionName, holder.petImageView);
-//            }
-//        });
-
+        return null;
     }
-
 
 }

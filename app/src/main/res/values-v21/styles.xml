@@ -1,5 +1,9 @@
 <resources>
 
+    <style name="AppTheme.Home">
+        <item name="android:windowReenterTransition">@transition/grid_reenter</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

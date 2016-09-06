@@ -11,12 +11,14 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import com.example.svaiyapu.petutrecht.R;
 import com.example.svaiyapu.petutrecht.Util.IntentUtil;
+import com.example.svaiyapu.petutrecht.Util.MainSharedElementCallback;
 import com.example.svaiyapu.petutrecht.data.Model.Pet;
 
 import java.util.List;
@@ -27,6 +29,11 @@ public class DetailActivity extends AppCompatActivity implements DetailContract.
     private AppCompatActivity mAppCompatActivity;
     private ViewPager mViewPager;
     private int mInitialItem;
+    private static final String LOG_TAG = "DetailActivity";
+    private String message_pet_name;
+    private String message_pet_type;
+    private MainSharedElementCallback sharedElementCallback;
+
 
     private final View.OnClickListener navigationOnClickListener =
             new View.OnClickListener() {
@@ -55,14 +62,18 @@ public class DetailActivity extends AppCompatActivity implements DetailContract.
             transitions.addTransition(slide);
             transitions.addTransition(new Fade());
             getWindow().setEnterTransition(transitions);
+
+            sharedElementCallback = new MainSharedElementCallback();
+            setEnterSharedElementCallback(sharedElementCallback);
+
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(navigationOnClickListener);
 
         Intent intent = getIntent();
-        final String message_pet_name = intent.getStringExtra(IntentUtil.GRID_TO_DETAIL_PET_NAME);
-        final String message_pet_type = intent.getStringExtra(IntentUtil.GRID_TO_DETAIL_PET_TYPE);
+        message_pet_name = intent.getStringExtra(IntentUtil.GRID_TO_DETAIL_PET_NAME);
+        message_pet_type = intent.getStringExtra(IntentUtil.GRID_TO_DETAIL_PET_TYPE);
 
         mPresenter = new DetailPresenter(this);
         mPresenter.loadPet(message_pet_name, message_pet_type);
@@ -72,7 +83,7 @@ public class DetailActivity extends AppCompatActivity implements DetailContract.
 
     private void setUpViewPager(List<Pet> pets) {
         mViewPager = (ViewPager) findViewById(R.id.detail_pager);
-        mViewPager.setAdapter(new DetailViewPagerAdapter(this, pets));
+        mViewPager.setAdapter(new DetailViewPagerAdapter(this, pets, sharedElementCallback));
         mViewPager.setCurrentItem(mInitialItem);
 
         mViewPager.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -118,13 +129,15 @@ public class DetailActivity extends AppCompatActivity implements DetailContract.
 
     @TargetApi(21)
     private void setActivityResult() {
+        // send the current item in the viewpager back to main activity
+        // this is for the main activity to reset its shared elements
         if (mInitialItem == mViewPager.getCurrentItem()) {
             setResult(RESULT_OK);
             return;
         }
-//        getWindow().setExitTransition(new Fade());
         Intent intent = new Intent();
         intent.putExtra(IntentUtil.SELECTED_ITEM_POSITION, mViewPager.getCurrentItem());
+        intent.putExtra(IntentUtil.DETAIL_TO_GRID_PET_TYPE, message_pet_type);
         setResult(RESULT_OK, intent);
     }
 

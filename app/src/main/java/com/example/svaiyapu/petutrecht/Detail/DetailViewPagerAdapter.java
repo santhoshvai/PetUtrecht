@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import com.example.svaiyapu.petutrecht.Contact.ContactActivity;
 import com.example.svaiyapu.petutrecht.R;
 import com.example.svaiyapu.petutrecht.Util.IntentUtil;
+import com.example.svaiyapu.petutrecht.Util.MainSharedElementCallback;
 import com.example.svaiyapu.petutrecht.data.Model.Pet;
 import com.squareup.picasso.Picasso;
 
@@ -30,11 +32,13 @@ public class DetailViewPagerAdapter extends PagerAdapter {
     private final List<Pet> allPets;
     private final Activity host;
     private final LayoutInflater mLayoutInflater;
+    private MainSharedElementCallback sharedElementCallback;
 
-    public DetailViewPagerAdapter(Activity activity, List<Pet> pets) {
+    public DetailViewPagerAdapter(Activity activity, List<Pet> pets, MainSharedElementCallback callback) {
         host = activity;
         allPets = pets;
         mLayoutInflater = LayoutInflater.from(activity);
+        sharedElementCallback = callback;
     }
 
     @Override
@@ -115,5 +119,13 @@ public class DetailViewPagerAdapter extends PagerAdapter {
         } else {
             host.startActivity(intent);
         }
+    }
+
+    @Override
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        // change shared element here,
+        // this is to reset the shared element when the user swipes to the next page in the viewPager
+        ImageView imageView = ((ImageView)((ViewGroup) object).findViewById(R.id.main_backdrop));
+        sharedElementCallback.setSharedView(imageView);
     }
 }

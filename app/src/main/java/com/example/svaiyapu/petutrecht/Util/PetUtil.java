@@ -26,6 +26,17 @@ public class PetUtil {
         return type.startsWith("A");
     }
 
+    public static boolean petTypeEqual(String type1, String type2){
+        if(isDog(type1)) {
+            return isDog(type2);
+        }
+        else if(isCat(type1)) {
+            return isCat(type2);
+        } else {
+            return isAll(type2);
+        }
+    }
+
     /**
      * decide font color in white or black depending on background color
      * Algorithm: http://stackoverflow.com/a/39031835/3394023
