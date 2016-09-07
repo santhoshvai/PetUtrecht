@@ -2,27 +2,19 @@ package com.example.svaiyapu.petutrecht.Grid;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.TextView;
-
-import com.example.svaiyapu.petutrecht.Detail.DetailActivity;
 import com.example.svaiyapu.petutrecht.R;
 import com.example.svaiyapu.petutrecht.Util.DynamicHeightImageView;
-import com.example.svaiyapu.petutrecht.Util.IntentUtil;
 import com.example.svaiyapu.petutrecht.Util.PetUtil;
 import com.example.svaiyapu.petutrecht.data.Model.Pet;
 import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 /**

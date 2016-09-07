@@ -26,7 +26,6 @@ import com.example.svaiyapu.petutrecht.data.Model.Pet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by svaiyapu on 8/26/16.
