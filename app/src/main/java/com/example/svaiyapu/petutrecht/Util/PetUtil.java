@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.widget.Toast;
 
+import com.example.svaiyapu.petutrecht.R;
 import com.example.svaiyapu.petutrecht.data.Model.Pet;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
  * Created by svaiyapu on 8/26/16.
  */
 public class PetUtil {
+    public static final String FAKE_PET_OWNER_MAIL = "fakePetOwner@gmail.com";
     public static boolean isDog(String type) {
         return type.startsWith("D");
     }
@@ -26,6 +28,12 @@ public class PetUtil {
         return type.startsWith("A");
     }
 
+    /**
+     * Compare if the pet types are equal
+     * @param type1 First pettype
+     * @param type2 Second pettype
+     * @return
+     */
     public static boolean petTypeEqual(String type1, String type2){
         if(isDog(type1)) {
             return isDog(type2);
@@ -51,7 +59,16 @@ public class PetUtil {
         return lum > 186 ? 0xFF000000 : 0xFFFFFFFF;
     }
 
-    public static void composeEmail(Context context, String address, String subject, String message) {
+    /**
+     *
+     * @param context context to start activity
+     * @param address address of the receiver
+     * @param petName name of the pet
+     * @param userName name of the adopting user
+     * @param message message typed by the user
+     */
+    public static void composeEmail(Context context, String address, String petName, String userName, String message) {
+        String subject = String.format("An adoption request for %s from %s", petName, userName);
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:" + address)); // only email apps should handle this
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
@@ -81,5 +98,13 @@ public class PetUtil {
             }
         }
         return dogs;
+    }
+
+    public static int getIconResource(String type) {
+        if(isDog(type)) {
+            return R.drawable.ic_dog_icon;
+        } else {
+            return R.drawable.ic_cat_icon;
+        }
     }
 }

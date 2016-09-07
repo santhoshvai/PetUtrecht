@@ -37,10 +37,11 @@ public class GridAdapter extends
     // Store the context for easy access
     private Activity mActivity;
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView titleTextView;
         public TextView breedTextView;
         public DynamicHeightImageView petImageView;
+
 
         public ViewHolder(View itemView) {
             // Stores the itemView in a public final member variable that can be used
@@ -49,42 +50,6 @@ public class GridAdapter extends
             titleTextView = (TextView) itemView.findViewById(R.id.pet_title);
             breedTextView = (TextView) itemView.findViewById(R.id.pet_breed);
             petImageView = (DynamicHeightImageView) itemView.findViewById(R.id.pet_thumbnail);
-            // Attach a click listener to the entire row view
-            itemView.setOnClickListener(this);
-        }
-
-        // Handles the grid item being clicked
-        @Override
-        public void onClick(View view) {
-            int position = getLayoutPosition(); // gets item position
-            Pet pet = mPets.get(position);
-            Intent intent = new Intent(mActivity, DetailActivity.class);
-            intent.putExtra(IntentUtil.GRID_TO_DETAIL_PET_NAME, pet.getName());
-            intent.putExtra(IntentUtil.GRID_TO_DETAIL_PET_TYPE, pet.getType());
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Pair pet_photo_pair = Pair.create(
-                        petImageView, // shared view
-                        petImageView.getTransitionName() // identifier
-                );
-                // best practice - inlcude window decors during shared element transition
-                // Video: a window into transitions - google IO 2016
-                View navigationBar = mActivity.findViewById(android.R.id.navigationBarBackground);
-                Pair nav_bar_pair = Pair.create(navigationBar, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME);
-                View statusBar = mActivity.findViewById(android.R.id.statusBarBackground);
-                Pair status_bar_pair = Pair.create(statusBar, Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME);
-                ActivityOptionsCompat options = ActivityOptionsCompat.
-                        makeSceneTransitionAnimation(
-                                mActivity, // launching activity
-                                pet_photo_pair,
-                                nav_bar_pair,
-                                status_bar_pair
-                        );
-                mActivity.startActivityForResult(intent,
-                        IntentUtil.REQUEST_CODE,
-                        options.toBundle());
-            } else {
-                mActivity.startActivity(intent);
-            }
         }
 
     }

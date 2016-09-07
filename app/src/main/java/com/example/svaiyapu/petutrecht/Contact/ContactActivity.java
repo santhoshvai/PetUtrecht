@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 
 import com.example.svaiyapu.petutrecht.R;
 import com.example.svaiyapu.petutrecht.Util.GUIUtils;
+import com.example.svaiyapu.petutrecht.Util.IntentUtil;
 import com.example.svaiyapu.petutrecht.Util.PetUtil;
 
 public class ContactActivity extends AppCompatActivity {
@@ -46,6 +47,8 @@ public class ContactActivity extends AppCompatActivity {
         mNameEditText = (EditText) findViewById(R.id.etUsername);
         mMessageEditText = (EditText) findViewById(R.id.etMessage);
 
+        final String petName = getIntent().getStringExtra(IntentUtil.DETAIL_TO_CONTACT_PET_NAME);
+
         if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) &&
                 (savedInstanceState == null)) {
             scheduleStartPostponedTransition(mFab);
@@ -67,7 +70,7 @@ public class ContactActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String name = mNameEditText.getText().toString();
                 String message = mMessageEditText.getText().toString();
-                PetUtil.composeEmail(view.getContext(), "mockPetAdopt@gmail.com",
+                PetUtil.composeEmail(view.getContext(), PetUtil.FAKE_PET_OWNER_MAIL, petName,
                         name, message);
             }
         });
@@ -178,17 +181,7 @@ public class ContactActivity extends AppCompatActivity {
     /**
      * Schedules the shared element transition to be started immediately
      * after the shared element has been measured and laid out within the
-     * activity's view hierarchy. Some common places where it might make
-     * sense to call this method are:
-     *
-     * (1) Inside a Fragment's onCreateView() method (if the shared element
-     *     lives inside a Fragment hosted by the called Activity).
-     *
-     * (2) Inside a Picasso Callback object (if you need to wait for Picasso to
-     *     asynchronously load/scale a bitmap before the transition can begin).
-     *
-     * (3) Inside a LoaderCallback's onLoadFinished() method (if the shared
-     *     element depends on data queried by a Loader).
+     * activity's view hierarchy.
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void scheduleStartPostponedTransition(final View sharedElement) {

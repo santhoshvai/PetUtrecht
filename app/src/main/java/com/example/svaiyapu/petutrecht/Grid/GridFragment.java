@@ -1,21 +1,25 @@
 package com.example.svaiyapu.petutrecht.Grid;
 
 import android.annotation.TargetApi;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.SharedElementCallback;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 
+import com.example.svaiyapu.petutrecht.Detail.DetailActivity;
 import com.example.svaiyapu.petutrecht.R;
+import com.example.svaiyapu.petutrecht.Util.DynamicHeightImageView;
 import com.example.svaiyapu.petutrecht.Util.IntentUtil;
 import com.example.svaiyapu.petutrecht.Util.PetUtil;
 import com.example.svaiyapu.petutrecht.data.Model.Pet;
@@ -102,6 +106,50 @@ public class GridFragment extends Fragment implements GridContract.View {
                 new StaggeredGridLayoutManager(noOfCols, StaggeredGridLayoutManager.VERTICAL);
         // Attach the layout manager to the recycler view
         mRecyclerView.setLayoutManager(gridLayoutManager);
+        mRecyclerView.addOnItemTouchListener(new OnItemSelectedListener(getActivity()) {
+            @Override
+            public void onItemSelected(RecyclerView.ViewHolder holder, int position) {
+                String petName = ((GridAdapter.ViewHolder)holder).titleTextView.getText().toString();
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra(IntentUtil.GRID_TO_DETAIL_PET_NAME, petName);
+                intent.putExtra(IntentUtil.GRID_TO_DETAIL_PET_TYPE, mPetType);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    DynamicHeightImageView petImageView = ((GridAdapter.ViewHolder)holder).petImageView;
+                    Pair pet_photo_pair = Pair.create(
+                            petImageView, // shared view
+                            petImageView.getTransitionName() // identifier
+                    );
+                    ActivityOptions options;
+                    // best practice - include window decors during shared element transition
+                    // Video: a window into transitions - google IO 2016
+                    View statusBar = getActivity().findViewById(android.R.id.statusBarBackground);
+                    Pair status_bar_pair = Pair.create(statusBar, Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME);
+                    View navigationBar = getActivity().findViewById(android.R.id.navigationBarBackground);
+                    if(navigationBar != null) {
+                        Pair nav_bar_pair = Pair.create(navigationBar, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME);
+                         options = ActivityOptions.makeSceneTransitionAnimation(
+                                getActivity(), // launching activity
+                                pet_photo_pair,
+                                nav_bar_pair,
+                                status_bar_pair
+                        );
+                    } else {
+                        // nav bar is not present in some devices. Example: Samsung Galaxy S7
+                        options = ActivityOptions.makeSceneTransitionAnimation(
+                                getActivity(), // launching activity
+                                pet_photo_pair,
+                                status_bar_pair
+                        );
+                    }
+                    startActivityForResult(intent,
+                            IntentUtil.REQUEST_CODE,
+                            options.toBundle());
+                } else {
+                    startActivity(intent);
+                }
+
+            }
+        });
     }
 
     @Override

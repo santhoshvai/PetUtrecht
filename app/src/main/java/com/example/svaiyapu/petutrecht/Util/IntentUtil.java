@@ -17,6 +17,7 @@ public class IntentUtil {
     public static final String DETAIL_TO_GRID_PET_TYPE = "detailToGrid_petType";
     public static final String DETAIL_TO_CONTACT_PET_NAME = "detailToContact_petName";
     public static final String SELECTED_ITEM_POSITION = "selected";
+    public static final String MAP_TO_DETAIL_PET_TYPE = "All";
     public static final int REQUEST_CODE = 7;
 
     /**

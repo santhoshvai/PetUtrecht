@@ -1,31 +1,45 @@
 package com.example.svaiyapu.petutrecht.Map;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.example.svaiyapu.petutrecht.Detail.DetailActivity;
 import com.example.svaiyapu.petutrecht.R;
+import com.example.svaiyapu.petutrecht.Util.DynamicHeightImageView;
+import com.example.svaiyapu.petutrecht.Util.IntentUtil;
+import com.example.svaiyapu.petutrecht.Util.PetUtil;
 import com.example.svaiyapu.petutrecht.data.Model.Location;
 import com.example.svaiyapu.petutrecht.data.Model.Pet;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 /**
  * Created by svaiyapu on 8/18/16.
  */
-public class MapFragment extends Fragment implements MapContract.View, OnMapReadyCallback,
-        GoogleMap.OnInfoWindowClickListener {
+public class MapFragment extends Fragment implements MapContract.View, OnMapReadyCallback {
 
     private GoogleMap mMap;
     private MapContract.Presenter mPresenter;
@@ -81,8 +95,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         mMap = googleMap;
         // Ask the presenter to fetch the pet list from presenter
         mPresenter.loadPets();
-        // Set a listener for info window events.
-        mMap.setOnInfoWindowClickListener(this);
     }
 
     /**
@@ -95,10 +107,14 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         for(Pet pet: pets){
             Location location = pet.getLocation();
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(latLng)
+            Marker petMarker = mMap.addMarker(new MarkerOptions().position(latLng)
                     .title(pet.getName())
                     .snippet(pet.getBreed())
+                    .icon(BitmapDescriptorFactory.fromResource(
+                            PetUtil.getIconResource(pet.getType()) //get cat/Dog icon
+                    ))
             );
+            petMarker.setTag(pet);
         }
         //Build camera position
         Location camZoomLocation = pets.get(0).getLocation();
@@ -108,11 +124,48 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 .zoom(ZOOM_LEVEL).build();
         //Zoom in and animate the camera.
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-    }
 
-    @Override
-    public void onInfoWindowClick(Marker marker) {
-        Log.d(LOG_TAG, "Info window clicked for: "+ marker.getTitle());
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            // Use default InfoWindow frame
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            // Defines the contents of the InfoWindow
+            @Override
+            public View getInfoContents(Marker marker) {
+                // Getting view from the layout file info_window_layout
+                final View v = LayoutInflater.from(getActivity()).inflate(R.layout.info_window_item, null);
+
+                final Pet pet = (Pet) marker.getTag();
+
+                final TextView titleTextView = (TextView) v.findViewById(R.id.infowindow_titleTextView);
+                final TextView breedTextView = (TextView) v.findViewById(R.id.infowindow_typeTextView);
+                final ImageView petImageView = (ImageView) v.findViewById(R.id.infowindow_imageView);
+
+                titleTextView.setText(pet.getName());
+                breedTextView.setText(pet.getBreed());
+
+                Picasso.with(getActivity())
+                        .load(pet.getImg_primary())
+                        .placeholder(R.drawable.placeholder)
+                        .into(petImageView, new InfoWindowRefresher(marker));
+
+                // Returning the view containing InfoWindow contents
+                return v;
+            }
+        });
+        // Set a listener for info window events.
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra(IntentUtil.GRID_TO_DETAIL_PET_NAME, marker.getTitle());
+                intent.putExtra(IntentUtil.GRID_TO_DETAIL_PET_TYPE, IntentUtil.MAP_TO_DETAIL_PET_TYPE);
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -157,6 +210,25 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         if(mMapView != null) {
             mMapView.onLowMemory();
         }
+    }
+
+    private class InfoWindowRefresher implements  com.squareup.picasso.Callback {
+        private Marker marker;
+
+        private InfoWindowRefresher(Marker markerToRefresh) {
+            this.marker = markerToRefresh;
+        }
+
+        @Override
+        public void onSuccess() {
+            if (marker != null && marker.isInfoWindowShown()) {
+                marker.hideInfoWindow();
+                marker.showInfoWindow();
+            }
+        }
+
+        @Override
+        public void onError() {}
     }
 
 }
