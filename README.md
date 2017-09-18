@@ -1,3 +1,5 @@
+**This project is no longer maintained**
+
 # Pet Utrecht
 
 <img src="screenshots/gridToDet.gif" width="400" align="right" hspace="20">
